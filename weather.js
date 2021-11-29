@@ -1,30 +1,67 @@
 #!/ust/bin/env node
 import {getArgs} from "./helper/args.js"
 import {printSuccess, printError, printHelp} from "./services/log.service.js";
-import {saveKeyValue,} from "./services/storage.service.js";
+import {saveKeyValue, KEY_DICTIONARY} from "./services/storage.service.js";
+import {getWeather} from "./services/api.service.js"
 
 const saveToken = async (token) => {
+    if (!token.length) {
+        return printError('токен не передан')
+    }
     try {
-        await saveKeyValue('token', token)
+        await saveKeyValue(KEY_DICTIONARY.token, token)
         printSuccess('Token сохранен')
     } catch (err) {
         printError(err.message)
     }
+};
+const saveCity = async (city) => {
+    if (!city.length) {
+        return printError('Город не задан')
+    }
+    try {
+        await saveKeyValue(KEY_DICTIONARY.city, city)
+        printSuccess('Город сохранен')
+    } catch (err) {
+        printError(err.message)
+    }
+};
+const getForcast = async (city) => {
+    try {
+        const weather = await getWeather(city);
+        console.log(weather)
+    } catch (err) {
+        const error = err?.response?.status
+
+        switch (error) {
+            case 404:
+                console.log('не верно указан город')
+                break
+            case 401:
+                console.log('не верно указан токен')
+                break
+            default:
+                console.log(error)
+        }
+        console.log('error', error)
+    }
 }
 
+
 const initCli = () => {
+
     const args = getArgs(process.argv)
     console.log(args)
     if (args.h) {
         printHelp();
     }
     if (args.s) {
-        // Сохранить город
+        saveCity(args.s)
     }
     if (args.t) {
         saveToken(args.t)
     }
-    // вывести погоду
+    getForcast('Moscow')
 }
 initCli()
 

@@ -3,7 +3,10 @@ import {join} from 'path'
 import {promises} from "fs";
 
 const filePath = join(homedir(), 'weather-data.json')
-
+export const KEY_DICTIONARY = {
+    token: 'token',
+    city: 'city',
+}
 
 export const saveKeyValue = async (key, value) => {
     let data = {};
