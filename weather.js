@@ -32,7 +32,7 @@ const saveCity = async (city) => {
 const getForcast = async () => {
     try {
         const weather = await getWeather();
-        uiWeather(weather)
+        uiWeather(weather, 'icon')
     } catch (err) {
         const error = err?.response?.status
         switch (error) {
