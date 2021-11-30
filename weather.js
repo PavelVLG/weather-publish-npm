@@ -3,8 +3,10 @@ import {getArgs} from "./helper/args.js"
 import {printSuccess, printError, printHelp} from "./services/log.service.js";
 import {saveKeyValue, KEY_DICTIONARY} from "./services/storage.service.js";
 import {getWeather} from "./services/api.service.js"
+import {uiWeather} from "./services/ui.service.js"
 
 const saveToken = async (token) => {
+
     if (!token.length) {
         return printError('токен не передан')
     }
@@ -15,6 +17,7 @@ const saveToken = async (token) => {
         printError(err.message)
     }
 };
+
 const saveCity = async (city) => {
     if (!city.length) {
         return printError('Город не задан')
@@ -26,13 +29,12 @@ const saveCity = async (city) => {
         printError(err.message)
     }
 };
-const getForcast = async (city) => {
+const getForcast = async () => {
     try {
-        const weather = await getWeather(city);
-        console.log(weather)
+        const weather = await getWeather();
+        uiWeather(weather)
     } catch (err) {
         const error = err?.response?.status
-
         switch (error) {
             case 404:
                 console.log('не верно указан город')
@@ -51,7 +53,6 @@ const getForcast = async (city) => {
 const initCli = () => {
 
     const args = getArgs(process.argv)
-    console.log(args)
     if (args.h) {
         printHelp();
     }
@@ -61,7 +62,7 @@ const initCli = () => {
     if (args.t) {
         saveToken(args.t)
     }
-    getForcast('Moscow')
+    getForcast()
 }
 initCli()
 
